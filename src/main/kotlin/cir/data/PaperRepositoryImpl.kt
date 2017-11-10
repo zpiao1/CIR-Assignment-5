@@ -24,10 +24,6 @@ class PaperRepositoryImpl @Autowired constructor(
     return mongoOperations.findById(id, Paper::class.java)
   }
 
-  override fun findPapersByAuthorId(id: String): List<Paper> {
-    return listOf()
-  }
-
   override fun findPapersByAuthorName(name: String): List<Paper> {
     return listOf()
   }
