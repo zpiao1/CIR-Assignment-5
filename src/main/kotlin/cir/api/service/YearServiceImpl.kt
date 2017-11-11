@@ -16,27 +16,27 @@ import cir.data.entity.getTyped
 import cir.data.entity.toPaper
 import com.mongodb.client.model.Aggregates.*
 import com.mongodb.client.model.Filters.eq
-import com.mongodb.client.model.Projections.*
+import com.mongodb.client.model.Projections
 import org.bson.Document
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.mongodb.core.MongoOperations
 import org.springframework.stereotype.Service
 
 @Service
-class VenueServiceImpl
-@Autowired constructor(mongoOperations: MongoOperations) : VenueService {
+class YearServiceImpl
+@Autowired constructor(mongoOperations: MongoOperations) : YearService {
 
   private val collection = mongoOperations.getCollection(COLLECTION)
 
-  private fun venueEq(venue: String) = eq(VENUE, venue)
+  private fun yearEq(year: Int) = eq(YEAR, year)
 
-  override fun doesVenueExist(venue: String): Boolean {
-    return countPapersByVenue(venue) > 0
+  override fun doesYearExist(year: Int): Boolean {
+    return countPapersByYear(year) > 0
   }
 
-  override fun countVenues(): Long {
+  override fun countYears(): Long {
     return collection.aggregate(listOf(
-        group(VENUE.toPath()),
+        group(YEAR.toPath()),
         count()
     ))
         .first()
@@ -44,30 +44,30 @@ class VenueServiceImpl
         .toLong()
   }
 
-  override fun countByVenue(venue: String, field: String): Long {
+  override fun countByYear(year: Int, field: String): Long {
     return when (field) {
-      PAPERS -> countPapersByVenue(venue)
-      KEY_PHRASES, AUTHORS, YEAR, IN_CITATIONS, OUT_CITATIONS -> countFieldByVenue(venue, field)
+      PAPERS -> countPapersByYear(year)
+      KEY_PHRASES, AUTHORS, VENUE, IN_CITATIONS, OUT_CITATIONS -> countFieldByYear(year, field)
       else -> 0L
     }
   }
 
-  private fun countPapersByVenue(venue: String): Long {
-    return collection.count(venueEq(venue))
+  private fun countPapersByYear(year: Int): Long {
+    return collection.count(yearEq(year))
   }
 
-  private fun countFieldByVenue(venue: String, field: String): Long {
+  private fun countFieldByYear(year: Int, field: String): Long {
     return if (field.isArray) {
-      countArrayFieldByVenue(venue, field)
+      countArrayFieldByYear(year, field)
     } else {
-      countSingularFieldByVenue(venue, field)
+      countSingularFieldByYear(year, field)
     }
   }
 
-  private fun countArrayFieldByVenue(venue: String, field: String): Long {
+  private fun countArrayFieldByYear(year: Int, field: String): Long {
     return collection.aggregate(listOf(
         unwind(field.toPath()),
-        match(venueEq(venue)),
+        match(yearEq(year)),
         group(field.toPath()),
         count()
     ))
@@ -76,9 +76,9 @@ class VenueServiceImpl
         .toLong()
   }
 
-  private fun countSingularFieldByVenue(venue: String, field: String): Long {
+  private fun countSingularFieldByYear(year: Int, field: String): Long {
     return collection.aggregate(listOf(
-        match(venueEq(venue)),
+        match(yearEq(year)),
         group(field.toPath()),
         count()
     ))
@@ -87,90 +87,90 @@ class VenueServiceImpl
         .toLong()
   }
 
-  override fun findVenues(asc: Boolean, limit: Int, orderBy: String): Any {
+  override fun findYears(asc: Boolean, limit: Int, orderBy: String): Any {
     return when (orderBy) {
-      "venue" -> findVenuesOrderByVenue(asc, limit)
-      "papers" -> findVenuesOrderByPapers(asc, limit)
+      "year" -> findYearsOrderByYear(asc, limit)
+      "papers" -> findYearsOrderByPapers(asc, limit)
       else -> Any()
     }
   }
 
-  private fun findVenuesOrderByVenue(asc: Boolean, limit: Int): List<String> {
+  private fun findYearsOrderByYear(asc: Boolean, limit: Int): List<Int> {
     return collection.aggregate(listOf(
-        group(VENUE.toPath()),
+        group(YEAR.toPath()),
         sort(ID.order(asc)),
         limit(limit),
         project(includeId())
     ))
-        .map { it.getString(ID) }
+        .map { it.getInteger(ID) }
         .toList()
   }
 
-  private fun findVenuesOrderByPapers(asc: Boolean, limit: Int): LinkedHashMap<String, Int> {
+  private fun findYearsOrderByPapers(asc: Boolean, limit: Int): LinkedHashMap<Int, Int> {
     return collection.aggregate(listOf(
-        group(VENUE.toPath(), groupCount()),
+        group(YEAR.toPath(), groupCount()),
         sort(COUNT.order(asc)),
         limit(limit)
     ))
-        .associateByTo(linkedMapOf(), { it.getString(ID) }, { it.getInteger(COUNT) })
+        .associateByTo(linkedMapOf(), { it.getInteger(ID) }, { it.getInteger(COUNT) })
   }
 
-  override fun findByVenue(venue: String, asc: Boolean, limit: Int, field: String,
+  override fun findByYear(year: Int, asc: Boolean, limit: Int, field: String,
       orderBy: String): Any {
     return when (field) {
-      PAPERS -> findPapersByVenue(venue, asc, limit, orderBy)
-      AUTHORS, KEY_PHRASES -> findArrayFieldsByVenue(venue, asc, limit, field, orderBy)
-      YEAR -> findSingularFieldsByVenue(venue, asc, limit, field, orderBy)
+      PAPERS -> findPapersByYear(year, asc, limit, orderBy)
+      AUTHORS, KEY_PHRASES -> findArrayFieldsByYear(year, asc, limit, field, orderBy)
+      VENUE -> findSingularFieldsByYear(year, asc, limit, field, orderBy)
       IN_CITATIONS, OUT_CITATIONS ->
-        findCitationsByVenue(venue, asc, limit, field, orderBy)
+        findCitationsByYear(year, asc, limit, field, orderBy)
       else -> Any()
     }
   }
 
-  private fun findPapersByVenue(venue: String, asc: Boolean, limit: Int,
+  private fun findPapersByYear(year: Int, asc: Boolean, limit: Int,
       orderBy: String): List<Paper> {
     return if (orderBy.toField().isArray) {
-      findPapersByVenueOrderByArrayField(venue, asc, limit, orderBy)
+      findPapersByYearOrderByArrayField(year, asc, limit, orderBy)
     } else {
-      findPapersByVenueOrderBySingularField(venue, asc, limit, orderBy)
+      findPapersByYearOrderBySingularField(year, asc, limit, orderBy)
     }
   }
 
-  private fun findPapersByVenueOrderByArrayField(venue: String, asc: Boolean, limit: Int,
+  private fun findPapersByYearOrderByArrayField(year: Int, asc: Boolean, limit: Int,
       orderBy: String): List<Paper> {
     return collection.aggregate(listOf(
-        match(venueEq(venue)),
+        match(yearEq(year)),
         addFields(size(orderBy.toField().toPath(), orderBy.toField().toSize())),
         sort(orderBy.toField().toSize().order(asc)),
-        project(exclude(orderBy.toField().toSize())),
+        project(Projections.exclude(orderBy.toField().toSize())),
         limit(limit)
     ))
         .map { it.toPaper() }
         .toList()
   }
 
-  private fun findPapersByVenueOrderBySingularField(venue: String, asc: Boolean, limit: Int,
+  private fun findPapersByYearOrderBySingularField(year: Int, asc: Boolean, limit: Int,
       orderBy: String): List<Paper> {
-    return collection.find(venueEq(venue))
+    return collection.find(yearEq(year))
         .sort(orderBy.toField().order(asc))
         .limit(limit)
         .map { it.toPaper() }
         .toList()
   }
 
-  private fun findArrayFieldsByVenue(venue: String, asc: Boolean, limit: Int, field: String,
+  private fun findArrayFieldsByYear(year: Int, asc: Boolean, limit: Int, field: String,
       orderBy: String): Any {
     return when (orderBy.toField()) {
-      PAPERS -> findArrayFieldsByVenueOrderByPapers(venue, asc, limit, field)
-      AUTHORS, KEY_PHRASES -> findArrayFieldsByVenueOrderByArrayField(venue, asc, limit, field)
+      PAPERS -> findArrayFieldsByYearOrderByPapers(year, asc, limit, field)
+      AUTHORS, KEY_PHRASES -> findArrayFieldsByYearOrderByArrayField(year, asc, limit, field)
       else -> Any()
     }
   }
 
-  private fun findArrayFieldsByVenueOrderByPapers(venue: String, asc: Boolean, limit: Int,
+  private fun findArrayFieldsByYearOrderByPapers(year: Int, asc: Boolean, limit: Int,
       field: String): LinkedHashMap<String, Int> {
     return collection.aggregate(listOf(
-        match(venueEq(venue)),
+        match(yearEq(year)),
         unwind(field.toPath()),
         group(field.toPath(), groupCount()),
         sort(COUNT.order(asc)),
@@ -179,10 +179,10 @@ class VenueServiceImpl
         .associateByTo(linkedMapOf(), { it.getString(ID) }, { it.getInteger(COUNT) })
   }
 
-  private fun findArrayFieldsByVenueOrderByArrayField(venue: String, asc: Boolean, limit: Int,
+  private fun findArrayFieldsByYearOrderByArrayField(year: Int, asc: Boolean, limit: Int,
       field: String): List<String> {
     return collection.aggregate(listOf(
-        match(venueEq(venue)),
+        match(yearEq(year)),
         unwind(field.toPath()),
         group(field.toPath()),
         sort(ID.order(asc)),
@@ -192,19 +192,19 @@ class VenueServiceImpl
         .toList()
   }
 
-  private fun findSingularFieldsByVenue(venue: String, asc: Boolean, limit: Int, field: String,
+  private fun findSingularFieldsByYear(year: Int, asc: Boolean, limit: Int, field: String,
       orderBy: String): Any {
     return when (orderBy) {
-      "papers" -> findSingularFieldsByVenueOrderByPapers(venue, asc, limit, field)
-      "year" -> findSingularFieldsByVenueOrderBySingularField(venue, asc, limit, field)
+      "papers" -> findSingularFieldsByYearOrderByPapers(year, asc, limit, field)
+      "venue" -> findSingularFieldsByYearOrderBySingularField(year, asc, limit, field)
       else -> Any()
     }
   }
 
-  private fun findSingularFieldsByVenueOrderByPapers(venue: String, asc: Boolean, limit: Int,
+  private fun findSingularFieldsByYearOrderByPapers(year: Int, asc: Boolean, limit: Int,
       field: String): LinkedHashMap<Any, Int> {
     return collection.aggregate(listOf(
-        match(venueEq(venue)),
+        match(yearEq(year)),
         group(field.toPath(), groupCount()),
         sort(COUNT.order(asc)),
         limit(limit)
@@ -212,10 +212,10 @@ class VenueServiceImpl
         .associateByTo(linkedMapOf(), { it.getValue(ID) }, { it.getInteger(COUNT) })
   }
 
-  private fun findSingularFieldsByVenueOrderBySingularField(venue: String, asc: Boolean, limit: Int,
+  private fun findSingularFieldsByYearOrderBySingularField(year: Int, asc: Boolean, limit: Int,
       field: String): List<Any> {
     return collection.aggregate(listOf(
-        match(venueEq(venue)),
+        match(yearEq(year)),
         group(field.toPath()),
         sort(ID.order(asc)),
         limit(limit)
@@ -224,24 +224,24 @@ class VenueServiceImpl
         .toList()
   }
 
-  private fun findCitationsByVenue(venue: String, asc: Boolean, limit: Int, field: String,
+  private fun findCitationsByYear(year: Int, asc: Boolean, limit: Int, field: String,
       orderBy: String): List<Paper> {
     return if (orderBy.toField().isArray) {
-      findCitationsByVenueOrderByArrayField(venue, asc, limit, field, orderBy)
+      findCitationsByYearOrderByArrayField(year, asc, limit, field, orderBy)
     } else {
-      findCitationsByVenueOrderBySingularField(venue, asc, limit, field, orderBy)
+      findCitationsByYearOrderBySingularField(year, asc, limit, field, orderBy)
     }
   }
 
-  private fun findCitationsByVenueOrderByArrayField(venue: String, asc: Boolean, limit: Int,
+  private fun findCitationsByYearOrderByArrayField(year: Int, asc: Boolean, limit: Int,
       field: String, orderBy: String): List<Paper> {
     return collection.aggregate(listOf(
-        match(venueEq(venue)),
+        match(yearEq(year)),
         unwind(field.toPath()),
         group(field.toPath()),
         lookupPaper(),
         project(documentAt0()),
-        project(fields(include(DOCUMENT),
+        project(Projections.fields(Projections.include(DOCUMENT),
             size("$DOCUMENT.${orderBy.toField()}".toPath(), orderBy.toField().toSize()))),
         sort(orderBy.toField().toSize().order(asc)),
         limit(limit)
@@ -250,10 +250,10 @@ class VenueServiceImpl
         .toList()
   }
 
-  private fun findCitationsByVenueOrderBySingularField(venue: String, asc: Boolean, limit: Int,
+  private fun findCitationsByYearOrderBySingularField(year: Int, asc: Boolean, limit: Int,
       field: String, orderBy: String): List<Paper> {
     return collection.aggregate(listOf(
-        match(venueEq(venue)),
+        match(yearEq(year)),
         unwind(field.toPath()),
         group(field.toPath()),
         lookupPaper(),
