@@ -22,10 +22,10 @@ import org.springframework.data.mongodb.core.MongoOperations
 import org.springframework.stereotype.Service
 
 @Service
-class KeyPhraseServiceImpl
+class KeyPhrasesServiceImpl
 @Autowired constructor(
     mongoOperations: MongoOperations
-) : KeyPhraseService {
+) : KeyPhrasesService {
 
   private val collection = mongoOperations.getCollection(COLLECTION)
 

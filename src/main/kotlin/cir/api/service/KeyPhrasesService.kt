@@ -1,6 +1,6 @@
 package cir.api.service
 
-interface KeyPhraseService {
+interface KeyPhrasesService {
   fun doesKeyPhraseExist(keyPhrase: String): Boolean
 
   fun countKeyPhrases(): Long

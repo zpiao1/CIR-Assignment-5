@@ -1,6 +1,6 @@
 package cir.api.controller
 
-interface AuthorApi {
+interface AuthorsApi {
 
   fun doesAuthorExist(name: String): Boolean
 

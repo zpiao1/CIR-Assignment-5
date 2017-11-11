@@ -54,9 +54,10 @@ fun String.toSize() = this + "Size"
 
 fun String.toPath() = "\$" + this
 
-fun String.toField() = when {
-  this == "abstract" -> PAPER_ABSTRACT
-  this == "name" -> AUTHORS
+fun String.toField() = when (this) {
+  "abstract" -> PAPER_ABSTRACT
+  "name" -> AUTHORS
+  "keyPhrase" -> KEY_PHRASES
   else -> this
 }
 

@@ -27,10 +27,10 @@ import java.util.regex.Pattern
 import java.util.regex.Pattern.CASE_INSENSITIVE
 
 @Service
-class AuthorServiceImpl
+class AuthorsServiceImpl
 @Autowired constructor(
     mongoOperations: MongoOperations
-) : AuthorService {
+) : AuthorsService {
 
   private val collection = mongoOperations.getCollection(COLLECTION)
 

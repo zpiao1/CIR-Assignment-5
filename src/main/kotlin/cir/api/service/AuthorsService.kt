@@ -1,6 +1,6 @@
 package cir.api.service
 
-interface AuthorService {
+interface AuthorsService {
 
   fun doesAuthorExist(author: String): Boolean
 

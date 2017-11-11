@@ -6,7 +6,7 @@ import cir.Fields.OUT_CITATIONS
 import cir.Fields.PAPERS
 import cir.Fields.VENUE
 import cir.Fields.YEAR
-import cir.api.service.AuthorService
+import cir.api.service.AuthorsService
 import cir.toField
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.GetMapping
@@ -15,12 +15,12 @@ import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
-class AuthorController
-@Autowired constructor(private val authorService: AuthorService) : AuthorApi {
+class AuthorsController
+@Autowired constructor(private val authorsService: AuthorsService) : AuthorsApi {
 
   @GetMapping("/api/authors/{name}/exist")
   override fun doesAuthorExist(@PathVariable(required = true) name: String) =
-      authorService.doesAuthorExist(name)
+      authorsService.doesAuthorExist(name)
 
   @GetMapping("/api/authors")
   override fun getAuthors(
@@ -29,12 +29,12 @@ class AuthorController
       @RequestParam(required = false, defaultValue = "true") asc: Boolean,
       @RequestParam(required = false, defaultValue = "50") limit: Int) =
       when (nameContains) {
-        null, "" -> authorService.findAuthors(asc, limit, orderBy)
-        else -> authorService.findAuthorsByNameContains(nameContains, asc, limit, orderBy)
+        null, "" -> authorsService.findAuthors(asc, limit, orderBy)
+        else -> authorsService.findAuthorsByNameContains(nameContains, asc, limit, orderBy)
       }
 
   @GetMapping("/api/authors/count")
-  override fun getAuthorsCount() = authorService.countAuthors()
+  override fun getAuthorsCount() = authorsService.countAuthors()
 
   @GetMapping("/api/authors/{name}/papers")
   override fun getPapersByAuthor(
@@ -42,11 +42,11 @@ class AuthorController
       @RequestParam(required = false, defaultValue = "title") orderBy: String,
       @RequestParam(required = false, defaultValue = "true") asc: Boolean,
       @RequestParam(required = false, defaultValue = "10") limit: Int) =
-      authorService.findByAuthor(name, asc, limit, PAPERS, orderBy.toField())
+      authorsService.findByAuthor(name, asc, limit, PAPERS, orderBy.toField())
 
   @GetMapping("/api/authors/{name}/papers/count")
   override fun getPapersCountByAuthor(@PathVariable(required = true) name: String) =
-      authorService.countByAuthor(name, PAPERS)
+      authorsService.countByAuthor(name, PAPERS)
 
   @GetMapping("/api/authors/{name}/years")
   override fun getYearsOfPapersByAuthor(
@@ -54,11 +54,11 @@ class AuthorController
       @RequestParam(required = false, defaultValue = "year") orderBy: String,
       @RequestParam(required = false, defaultValue = "true") asc: Boolean,
       @RequestParam(required = false, defaultValue = "50") limit: Int) =
-      authorService.findByAuthor(name, asc, limit, YEAR, orderBy)
+      authorsService.findByAuthor(name, asc, limit, YEAR, orderBy)
 
   @GetMapping("/api/authors/{name}/years/count")
   override fun getYearsOfPapersCountByAuthor(@PathVariable(required = true) name: String) =
-      authorService.countByAuthor(name, YEAR)
+      authorsService.countByAuthor(name, YEAR)
 
   @GetMapping("/api/authors/{name}/keyPhrases")
   override fun getKeyPhrasesOfPapersByAuthor(
@@ -66,11 +66,11 @@ class AuthorController
       @RequestParam(required = false, defaultValue = "keyPhrase") orderBy: String,
       @RequestParam(required = false, defaultValue = "true") asc: Boolean,
       @RequestParam(required = false, defaultValue = "50") limit: Int) =
-      authorService.findByAuthor(name, asc, limit, KEY_PHRASES, orderBy)
+      authorsService.findByAuthor(name, asc, limit, KEY_PHRASES, orderBy)
 
   @GetMapping("/api/authors/{name}/keyPhrases/count")
   override fun getKeyPhrasesCountOfPapersByAuthor(@PathVariable(required = true) name: String) =
-      authorService.countByAuthor(name, KEY_PHRASES)
+      authorsService.countByAuthor(name, KEY_PHRASES)
 
   @GetMapping("/api/authors/{name}/venues")
   override fun getVenuesOfPapersByAuthor(
@@ -78,11 +78,11 @@ class AuthorController
       @RequestParam(required = false, defaultValue = "venue") orderBy: String,
       @RequestParam(required = false, defaultValue = "true") asc: Boolean,
       @RequestParam(required = false, defaultValue = "50") limit: Int) =
-      authorService.findByAuthor(name, asc, limit, VENUE, orderBy)
+      authorsService.findByAuthor(name, asc, limit, VENUE, orderBy)
 
   @GetMapping("/api/authors/{name}/venues/count")
   override fun getVenuesOfPapersCountByAuthor(@PathVariable(required = true) name: String) =
-      authorService.countByAuthor(name, VENUE)
+      authorsService.countByAuthor(name, VENUE)
 
   @GetMapping("/api/authors/{name}/inCitations")
   override fun getInCitationsOfPapersByAuthor(
@@ -90,11 +90,11 @@ class AuthorController
       @RequestParam(required = false, defaultValue = "title") orderBy: String,
       @RequestParam(required = false, defaultValue = "true") asc: Boolean,
       @RequestParam(required = false, defaultValue = "10") limit: Int) =
-      authorService.findByAuthor(name, asc, limit, IN_CITATIONS, orderBy.toField())
+      authorsService.findByAuthor(name, asc, limit, IN_CITATIONS, orderBy.toField())
 
   @GetMapping("/api/authors/{name}/inCitations/count")
   override fun getInCitationsOfPapersCountByAuthor(@PathVariable(required = true) name: String) =
-      authorService.countByAuthor(name, IN_CITATIONS)
+      authorsService.countByAuthor(name, IN_CITATIONS)
 
   @GetMapping("/api/authors/{name}/outCitations")
   override fun getOutCitationsOfPapersByAuthor(
@@ -102,9 +102,9 @@ class AuthorController
       @RequestParam(required = false, defaultValue = "title") orderBy: String,
       @RequestParam(required = false, defaultValue = "true") asc: Boolean,
       @RequestParam(required = false, defaultValue = "10") limit: Int) =
-      authorService.findByAuthor(name, asc, limit, OUT_CITATIONS, orderBy.toField())
+      authorsService.findByAuthor(name, asc, limit, OUT_CITATIONS, orderBy.toField())
 
   @GetMapping("/api/authors/{name}/outCitations/count")
   override fun getOutCitationsOfPapersCountByAuthor(@PathVariable(required = true) name: String) =
-      authorService.countByAuthor(name, OUT_CITATIONS)
+      authorsService.countByAuthor(name, OUT_CITATIONS)
 }
