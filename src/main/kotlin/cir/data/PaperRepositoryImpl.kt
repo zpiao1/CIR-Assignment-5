@@ -1,9 +1,13 @@
 package cir.data
 
+import cir.COLLECTION
 import cir.data.entity.Paper
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.data.mongodb.core.*
 import org.springframework.data.mongodb.core.BulkOperations.BulkMode.ORDERED
+import org.springframework.data.mongodb.core.MongoOperations
+import org.springframework.data.mongodb.core.bulkOps
+import org.springframework.data.mongodb.core.exists
+import org.springframework.data.mongodb.core.find
 import org.springframework.data.mongodb.core.query.Criteria.where
 import org.springframework.data.mongodb.core.query.Query
 import org.springframework.data.mongodb.core.query.Query.query
@@ -15,6 +19,8 @@ import org.springframework.stereotype.Repository
 class PaperRepositoryImpl @Autowired constructor(
     private val mongoOperations: MongoOperations
 ) : PaperReadRepository, PaperWriteRepository {
+
+  private val collection = mongoOperations.getCollection(COLLECTION)
 
   override fun savePaper(paper: Paper) {
     mongoOperations.save(paper)
@@ -54,6 +60,8 @@ class PaperRepositoryImpl @Autowired constructor(
   }
 
   override fun hasData(): Boolean {
-    return mongoOperations.count<Paper>(Query()) > 0
+    return countPapers() > 0
   }
+
+  private fun countPapers() = collection.count()
 }

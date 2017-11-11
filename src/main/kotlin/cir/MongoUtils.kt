@@ -35,6 +35,7 @@ object Fields {
   val YEAR = "year"
   val COUNT = "count"
   val DOCUMENT = "document"
+  val PAPERS = "papers"
 }
 
 const val COLLECTION = "paper"
@@ -53,7 +54,11 @@ fun String.toSize() = this + "Size"
 
 fun String.toPath() = "\$" + this
 
-fun String.toField() = if (this == "abstract") PAPER_ABSTRACT else this
+fun String.toField() = when {
+  this == "abstract" -> PAPER_ABSTRACT
+  this == "name" -> AUTHORS
+  else -> this
+}
 
 fun size(expression: String, `as`: String) = Document(`as`, Document("\$size", expression))
 

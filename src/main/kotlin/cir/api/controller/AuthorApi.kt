@@ -1,64 +1,62 @@
 package cir.api.controller
 
-import cir.data.entity.Paper
-
 interface AuthorApi {
 
   fun doesAuthorExist(name: String): Boolean
 
   fun getAuthors(
       nameContains: String?,
-      orderBy: String = "name",
-      asc: Boolean = true,
-      limit: Int = 100): Any
+      orderBy: String,
+      asc: Boolean,
+      limit: Int): Any
 
   fun getAuthorsCount(): Long
 
   fun getPapersByAuthor(
       name: String,
-      orderBy: String = "title",
-      asc: Boolean = true,
-      limit: Int = 20): List<Paper>
+      orderBy: String,
+      asc: Boolean,
+      limit: Int): Any
 
   fun getPapersCountByAuthor(name: String): Long
 
   fun getYearsOfPapersByAuthor(
       name: String,
-      orderBy: String = "year",
-      asc: Boolean = true,
-      limit: Int = 100): Any
+      orderBy: String,
+      asc: Boolean,
+      limit: Int): Any
 
   fun getYearsOfPapersCountByAuthor(name: String): Long
 
   fun getKeyPhrasesOfPapersByAuthor(
       name: String,
-      orderBy: String = "keyPhrase",
-      asc: Boolean = true,
-      limit: Int = 100): Any
+      orderBy: String,
+      asc: Boolean,
+      limit: Int): Any
 
   fun getKeyPhrasesCountOfPapersByAuthor(name: String): Long
 
   fun getVenuesOfPapersByAuthor(
       name: String,
-      orderBy: String = "venue",
-      asc: Boolean = true,
-      limit: Int = 100): Any
+      orderBy: String,
+      asc: Boolean,
+      limit: Int): Any
 
-  fun getVenuesCountOfPapersByAuthor(name: String): Long
+  fun getVenuesOfPapersCountByAuthor(name: String): Long
 
   fun getInCitationsOfPapersByAuthor(
       name: String,
-      orderBy: String = "title",
-      asc: Boolean = true,
-      limit: Int = 20): List<Paper>
+      orderBy: String,
+      asc: Boolean,
+      limit: Int): Any
 
-  fun getInCitationsCountOfPapersByAuthor(name: String): Long
+  fun getInCitationsOfPapersCountByAuthor(name: String): Long
 
   fun getOutCitationsOfPapersByAuthor(
       name: String,
-      orderBy: String = "title",
-      asc: Boolean = true,
-      limit: Int = 20): List<Paper>
+      orderBy: String,
+      asc: Boolean,
+      limit: Int): Any
 
-  fun getOutCitationsCountOfPapersByAuthor(name: String): Long
+  fun getOutCitationsOfPapersCountByAuthor(name: String): Long
 }
