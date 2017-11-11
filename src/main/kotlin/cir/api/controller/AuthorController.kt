@@ -6,7 +6,7 @@ import cir.Fields.OUT_CITATIONS
 import cir.Fields.PAPERS
 import cir.Fields.VENUE
 import cir.Fields.YEAR
-import cir.api.service.AuthorServiceImpl
+import cir.api.service.AuthorService
 import cir.toField
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.GetMapping
@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController
 
 @RestController
 class AuthorController
-@Autowired constructor(private val authorService: AuthorServiceImpl) : AuthorApi {
+@Autowired constructor(private val authorService: AuthorService) : AuthorApi {
 
   @GetMapping("/api/authors/{name}/exist")
   override fun doesAuthorExist(@PathVariable(required = true) name: String) =
