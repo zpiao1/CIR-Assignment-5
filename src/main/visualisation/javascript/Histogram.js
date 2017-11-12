@@ -549,7 +549,7 @@ layout = {
   }
 };
 
-Plotly.plot('plotly-div', {
+Plotly.plot('histo', {
   data: data,
   layout: layout
 });
