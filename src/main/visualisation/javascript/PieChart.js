@@ -1,16 +1,19 @@
 
 var data = [
 {
-  values: [16, 15, 12, 6, 5, 4, 42],
-  labels: ['US', 'China', 'European Union', 'Russian Federation', 'Brazil', 'India', 'Rest of World' ],
+  values: [16, 15, 12, 40],
+  labels: ['Conference A', 'Conference B', 'Conference C', 'Others' ],
   domain: {
-    x: [0, .48]
+    //x: [0, .48]
+    x: [0, 1]
   },
-  name: 'GHG Emissions',
+  name: 'Number of Docs Published',
   hoverinfo: 'label+percent+name',
   hole: .4,
   type: 'pie'
 },
+
+/*
 {
   values: [27, 11, 25, 8, 1, 3, 25],
   labels: ['US', 'China', 'European Union', 'Russian Federation', 'Brazil', 'India', 'Rest of World' ],
@@ -23,20 +26,24 @@ var data = [
   hoverinfo: 'label+percent+name',
   hole: .4,
   type: 'pie'
-}];
+}
+*/
+];
 
 var layout = {
-  title: 'Trend Three: Top N of Y',
+  title: 'Trend Three: Top 3 Conferences with the Most Number of Papers Published',
   annotations: [
     {
       font: {
         size: 14
       },
       showarrow: false,
-      text: 'GHG',
-      x: 0.17,
+      text: 'CIR',
+      //x: 0.17,
+      x: 0.50,
       y: 0.5
     },
+    /*
     {
       font: {
         size: 14
@@ -46,6 +53,7 @@ var layout = {
       x: 0.82,
       y: 0.5
     }
+    */
   ]
 };
 
